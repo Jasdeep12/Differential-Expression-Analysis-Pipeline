@@ -1,2 +1,2 @@
 sample	R1	R2
-sample1	data/raw/sample1_R1_.fastq.gz	data/raw/sample1_R2_.fastq.gz
+sample1	data/raw/sample1_R1_.fastq	data/raw/sample1_R2_.fastq
