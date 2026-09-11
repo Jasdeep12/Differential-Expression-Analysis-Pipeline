@@ -13,7 +13,7 @@ This workflow is designed such that it's reproducible and scalable to multiple s
 ## Workflow
 
 Input : Fastq
--> Fastqc
+-> Fastp
 -> HISAT2
 -> SAMtools sorting
 -> BAM indexing
@@ -24,7 +24,7 @@ Input : Fastq
 ## Tools
 
 Snakemake | Workflow management
-FastQC | Read Quality Control
+Fastp | Read Quality Control and Trimming
 HISAT2 | Read alignment
 SAMtools | BAM sorting and indexing
 featureCounts | Gene-level quantification
@@ -54,11 +54,11 @@ Snakemake directly manages the Conda environments, so no need to activate the en
 
 ## Example Result
 
-For SRR13970441, HISAT2 achieved a 94.53% overall alignment rate.
+For SRR13970441, HISAT2 achieved a 96.6% overall alignment rate.
 
 The pipeline generated:
 
-- FastQC quality-control reports
+- Fastp quality-control reports
 - MultiQC summary report
 - Sorted and indexed BAM
 - SAMtools alignment QC
@@ -84,7 +84,7 @@ RNASeqPipelineProject/
 |- results/
 |	- bam/
 |	- counts/
-|	- fastqc/
+|	- fastp/
 |	- multiqc/
 |-scripts/
 
