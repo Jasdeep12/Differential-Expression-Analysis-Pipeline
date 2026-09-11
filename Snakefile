@@ -13,12 +13,18 @@ SAMTOOLS_THREADS = config["threads"]["samtools"]
 
 rule all:
 	input:
-		expand("results/fastqc/{sample}_R1__fastqc.html",
-		sample=SAMPLES
-	),
-		expand("results/fastqc/{sample}_R2__fastqc.html",
+		expand("results/trimmed/{sample}_1.fastq.gz",
 		sample=SAMPLES
 	),	
+		expand("results/trimmed/{sample}_2.fastq.gz",
+		sample=SAMPLES
+	),
+		expand("results/fastp/{sample}.json",
+		sample=SAMPLES
+	),	
+		expand("results/fastp/{sample}.html",
+		sample=SAMPLES
+	),		
 		expand("results/bam/{sample}.sorted.bam.bai",	
 		sample=SAMPLES
 	),	
@@ -33,29 +39,38 @@ rule all:
 	),
 		"results/multiqc/multiqc_report.html"	
 									
-rule fastqc:
+rule fastp:
 	input:
 		r1=lambda wildcards: samples.loc[samples["sample"] == wildcards.sample, "R1"].iloc[0],
 		r2=lambda wildcards: samples.loc[samples["sample"] == wildcards.sample, "R2"].iloc[0]
-	
 	output:
-		html1="results/fastqc/{sample}_R1__fastqc.html",
-		zip1="results/fastqc/{sample}_R1__fastqc.zip",
-		html2="results/fastqc/{sample}_R2__fastqc.html",
-		zip2="results/fastqc/{sample}_R2__fastqc.zip"
+		json="results/fastp/{sample}.json",
+		html="results/fastp/{sample}.html",
+		trim1="results/trimmed/{sample}_1.fastq.gz",
+		trim2="results/trimmed/{sample}_2.fastq.gz"
 
 	conda:
 		"envs/RNASeqPipelineProject.yml"
-
+	
+	threads: ALIGN_THREADS
+	
 	shell:
 		"""
-		fastqc {input.r1} {input.r2} --outdir results/fastqc
+		
+		fastp \
+		-i {input.r1} \
+		-I {input.r2} \
+		-o {output.trim1} \
+		-O {output.trim2} \
+		-h {output.html} \
+		-j {output.json} \
+		--thread {threads}
 		"""
-
+	
 rule align:
 	input:
-		r1=lambda wildcards: samples.loc[samples["sample"] == wildcards.sample, "R1"].iloc[0],
-		r2=lambda wildcards: samples.loc[samples["sample"] == wildcards.sample, "R2"].iloc[0],
+		r1="results/trimmed/{sample}_1.fastq.gz",
+		r2="results/trimmed/{sample}_2.fastq.gz",
 		index=HISAT2_INDEX + ".1.ht2"
 
 	output:
@@ -137,8 +152,7 @@ rule quantify:
 
 rule multiqc:
 	input:
-		fastqc_r1=expand("results/fastqc/{sample}_R1__fastqc.zip", sample=SAMPLES),
-		fastqc_r2=expand("results/fastqc/{sample}_R2__fastqc.zip", sample=SAMPLES),
+		fastpjson=expand("results/fastp/{sample}.json", sample=SAMPLES),
 		flagstat=expand("results/qc/{sample}.flagstat.txt", sample=SAMPLES),
 		hisat2=expand("logs/{sample}.hisat2.log", sample=SAMPLES)
 	output:
@@ -150,7 +164,7 @@ rule multiqc:
 	shell:
 		"""
 		multiqc \
-			results/fastqc \
+			results/fastp \
 			results/qc \
 			logs \
 			--outdir results/multiqc \

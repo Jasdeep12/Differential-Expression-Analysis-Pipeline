@@ -16,7 +16,7 @@ dependencies:
   - brotli-python=1.2.0=py311heb3be6f_3
   - bzip2=1.0.8=hda65f42_10
   - c-ares=1.34.8=h280c20c_1
-  - ca-certificates=2026.8.13=h06a4308_0
+  - ca-certificates=2026.7.22=hbd8a1cb_0
   - cairo=1.18.4=he90730b_1
   - certifi=2026.7.22=pyhd8ed1ab_0
   - charset-normalizer=3.4.9=pyhd8ed1ab_0
@@ -38,6 +38,7 @@ dependencies:
   - dpath=2.2.0=pyha770c72_1
   - eido=0.2.6=pyhd8ed1ab_0
   - expat=2.8.1=hecca717_1
+  - fastp=1.3.6=h43da1c4_0
   - fastqc=0.12.1=hdfd78af_0
   - font-ttf-dejavu-sans-mono=2.37=hab24e00_0
   - font-ttf-inconsolata=3.000=h77eed37_0
@@ -64,6 +65,7 @@ dependencies:
   - idna=3.18=pyhcf101f3_0
   - immutables=0.21=py311h49ec1c0_2
   - importlib-metadata=9.0.0=pyhcf101f3_0
+  - isa-l=2.32.1=hb03c661_0
   - jinja2=3.1.6=pyhcf101f3_1
   - jsonschema=4.26.0=pyhcf101f3_0
   - jsonschema-specifications=2025.9.1=pyhcf101f3_0
@@ -93,6 +95,7 @@ dependencies:
   - libgomp=16.1.0=he0feb66_1
   - libharfbuzz=14.3.0=h17a8019_0
   - libharfbuzz-devel=14.3.0=h17a8019_0
+  - libhwy=1.3.0=h4c17acf_1
   - libiconv=1.18=h3b78370_2
   - libjpeg-turbo=3.2.0=hb03c661_1
   - liblapack=3.11.0=9_h47877c9_openblas
@@ -262,4 +265,4 @@ dependencies:
   - zipp=4.1.0=pyhcf101f3_0
   - zlib-ng=2.3.3=hceb46e0_1
   - zstd=1.5.7=hb78ec9c_7
-prefix: /home/jasdeep-badyal/Downloads/ENTER/envs/RNASeqPipelineProject
+prefix: /home/jazz/ENTER/envs/RNASeqPipelineProject

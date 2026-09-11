@@ -1,50 +1,44 @@
-# Reference Genome
+# NCBI Datasets
 
-## Organism
+https://www.ncbi.nlm.nih.gov/datasets
 
-Escherichia coli K-12 MG1655
+This zip archive contains an NCBI Datasets Data Package.
 
-## Genome Assembly
+NCBI Datasets Data Packages can include sequence, annotation and other data files, and metadata in one or more data report files.
+Data report files are in JSON Lines format.
 
-NCBI RefSeq:
-GCF_000005845.2
-ASM584v2
+\---
 
-## Genome File
+## FAQs
 
-`genome.fna`
+### Where is the data I requested?
 
-Source:
+Your data is in the subdirectory `ncbi\\\_dataset/data/` contained within this zip archive.
 
-NCBI RefSeq
+### I still can't find my data, can you help?
 
-## Annotation
+We have identified a bug affecting Mac Safari users. When downloading data from the NCBI Datasets web interface, you may see only this README file after the download has completed (while other files appear to be missing).
+As a workaround to prevent this issue from recurring, we recommend disabling automatic zip archive extraction in Safari until Apple releases a bug fix.
+For more information, visit:
+https://www.ncbi.nlm.nih.gov/datasets/docs/reference-docs/mac-zip-bug/
 
-`genomic.gff`
+### How do I work with JSON Lines data reports?
 
-Source:
+Visit our JSON Lines data report documentation page:
+https://www.ncbi.nlm.nih.gov/datasets/docs/v2/tutorials/working-with-jsonl-data-reports/
 
-NCBI RefSeq
+### What is NCBI Datasets?
 
-## HISAT2 Index
+NCBI Datasets is a resource that lets you easily gather data from across NCBI databases. Find and download gene, transcript, protein and genome sequences, annotation and metadata.
 
-The HISAT2 index was built from:
+### Where can I find NCBI Datasets documentation?
 
-`genome.fna`
+Visit the NCBI Datasets documentation pages:
+https://www.ncbi.nlm.nih.gov/datasets/docs/
 
-Index prefix:
+\---
 
-`reference/hisat2_index/ecoli`
+National Center for Biotechnology Information
+National Library of Medicine
+info@ncbi.nlm.nih.gov
 
-## Recreate the HISAT2 Index
-
-```bash
-hisat2-build \
-    reference/genome.fa \
-    reference/hisat2_index/ecoli
-
-## Checksums
-
-```text
-PASTE_GENOME_SHA256_HERE  genome.fa
-PASTE_GFF_SHA256_HERE     genes.gff

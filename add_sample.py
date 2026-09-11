@@ -169,9 +169,6 @@ def register(sample_name, r1, r2, force):
 	df.to_csv(SAMPLES_TSV, sep='\t', index=False)
 
 
-
-
-
 if __name__ == '__main__':
 	cli()
 
