@@ -1,2 +1,4 @@
 sample	R1	R2
 sample1	data/raw/sample1_R1_.fastq	data/raw/sample1_R2_.fastq
+testsample	data/raw/testsample_1.fastq	data/raw/testsample_2.fastq
+SRR13970441	data/raw/SRR13970441_1.fastq	data/raw/SRR13970441_2.fastq

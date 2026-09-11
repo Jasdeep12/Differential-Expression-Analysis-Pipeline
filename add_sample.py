@@ -26,8 +26,8 @@ def fetch(accession,name,force):
 	"""Downloads the ACCESSION via prefetch and fasterq-dump and registers it as a sample"""
 	if not ACCESSION_PATTERN.match(accession):
 		raise click.BadParameter(
-			f"'{accession}' doesn't seem to be a valid SRA accession")
-			f"(expected SRR/ERR/DRR followed by digits)"
+			f"'{accession}' doesn't seem to be a valid SRA accession"
+			f"(expected SRR/ERR/DRR followed by digits)")
 			
 
 	sample_name = name or accession
@@ -36,7 +36,7 @@ def fetch(accession,name,force):
 	
 
 	try:
-		accession = subprocess.run(['prefetch', fetch, '-O', str(raw_dir)],
+		subprocess.run(['prefetch', accession, '-O', str(raw_dir)],
 			check=True,
 			capture_output=True,
 			text=True)
@@ -93,11 +93,11 @@ def local(paths, force):
 	files = []
 	for path in paths:
 		if path.is_file():
-			if path.endswith(FASTQ_SUFFIXES):
+			if path.name.endswith(FASTQ_SUFFIXES):
 				files.append(path)
 		elif path.is_dir():
 			for file in sorted(path.iterdir()):
-				if file.is_file and file.endswith(FASTQ_SUFFIXES):
+				if file.is_file() and file.name.endswith(FASTQ_SUFFIXES):
 					files.append(file)
 
 	if not files:
@@ -108,10 +108,10 @@ def local(paths, force):
 
 	for sample_name, [r1,r2] in pairs.items():
 		if r1 is None or r2 is None:
-			missing_mate = 'R2' if r2 is None or 'R1' if r1 is None
+			missing_mate = 'R2' if r2 is None else 'R1'
 			click.echo(f"{sample_name} is missing {missing_mate}: skipping {sample_name}", err=True)
 			continue
-		register(sample_name, r1, r2)
+		register(sample_name, r1, r2, force=force)
 		click.echo(f"Registered {sample_name} : {r1} / {r2} ")
 
 
@@ -133,13 +133,12 @@ def pairmates(files):
 		pairs.setdefault(sample_name, [None,None])
 		pairs[sample_name][0 if mate == '1' else 1] = file
 
-	return {name: tuple(mates) for name, mates in pair.items()}
+	return {name: tuple(mates) for name, mates in pairs.items()}
 
 
 
-def register(r1, r2, sample_name):
+def register(sample_name, r1, r2, force):
 	"""Registers files in the data directory with the samples.tsv, allowing them to processed"""
-	samples = Path('config/samples.tsv')
 
 	r1, r2 = Path(r1), Path(r2)
 
@@ -149,12 +148,12 @@ def register(r1, r2, sample_name):
 	if not r2.exists():
 		raise FileNotFoundError(f"R2 file does not exist: {r2}")
 
-	SAMPLES_TSV.parent.mkdir(parent=True, exist_ok=True)
+	SAMPLES_TSV.parent.mkdir(parents=True, exist_ok=True)
 
 	if SAMPLES_TSV.exists():
 		df = pd.read_csv(SAMPLES_TSV, sep='\t')
 	else:
-		df = pd.DataFrame(columns=['sample','r1','r2'])
+		df = pd.DataFrame(columns=['sample','R1','R2'])
 
 	existing = df['sample'] == sample_name
 
@@ -162,12 +161,15 @@ def register(r1, r2, sample_name):
 		if not force:
 			raise ValueError(f"Sample: {sample_name} already exists in samples.tsv. Use --force to Overwrite.")
 
-		df.loc[exising, ['R1','R2']] = [str(r1), str(2)]
+		df.loc[existing, ['R1','R2']] = [str(r1), str(r2)]
 	else:
 		new_row = pd.DataFrame([{'sample': sample_name, 'R1': str(r1), 'R2': str(r2)}])
 		df = pd.concat([df,new_row], ignore_index=True)
 
 	df.to_csv(SAMPLES_TSV, sep='\t', index=False)
+
+
+
 
 
 if __name__ == '__main__':
