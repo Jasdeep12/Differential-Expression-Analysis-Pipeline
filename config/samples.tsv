@@ -1,2 +1,7 @@
 sample	R1	R2
-SRR13970441	data/raw/SRR13970441_1.fastq	data/raw/SRR13970441_2.fastq
+ERR14031884	data/raw/ERR14031884_1.fastq	data/raw/ERR14031884_2.fastq
+ERR14031885	data/raw/ERR14031885_1.fastq	data/raw/ERR14031885_2.fastq
+ERR14031886	data/raw/ERR14031886_1.fastq	data/raw/ERR14031886_2.fastq
+ERR14031887	data/raw/ERR14031887_1.fastq	data/raw/ERR14031887_2.fastq
+ERR14031888	data/raw/ERR14031888_1.fastq	data/raw/ERR14031888_2.fastq
+ERR14031889	data/raw/ERR14031889_1.fastq	data/raw/ERR14031889_2.fastq

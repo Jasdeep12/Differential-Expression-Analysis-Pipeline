@@ -17,6 +17,102 @@ def cli():
 	pass
 
 
+@cli.command()
+@click.argument('accession', nargs=-1)
+@click.option('--name', type=str, default=None, multiple=True, help='Sample names to use in the samples.tsv, enter them in the same order as the accession numbers (defaults to the accession')
+@click.option('--force', is_flag=True, help='Overwrite any existing samples with the same name')
+def fetchall(accession, name, force):
+    """Downloads multiple ACCESSIONS via prefetch and fasterq-dump and registers it as samples"""
+    
+    if len(accession) < 2:
+        raise click.UsageError(
+            "Less than 2 codes detected, for single codes use 'fetch' instead")
+    
+    if len(name) != len(accession) and len(name) > 0:
+        raise click.UsageError(
+            "Every sample should have an assigned name.")
+        
+    
+    for code in accession:
+        if not ACCESSION_PATTERN.match(code):
+            raise click.BadParameter(
+            f"'{code}' doesn't seem to be a valid SRA accession"
+            f"(expected SRR/ERR/DRR followed by digits)")
+    
+    raw_dir = Path('data/raw')
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    failed = []
+    
+    
+    for index, code in enumerate(accession):
+        sample_name = name[index] if name else code
+        
+        try:
+            subprocess.run(['prefetch', code, '-O', str(raw_dir)],
+                check=True,
+                capture_output=True,
+                text=True)
+
+        except subprocess.CalledProcessError as e:
+            click.echo(f"prefetch failed for {code}", err=True)
+            click.echo(f"Exit Code: {e.returncode}", err=True)
+            click.echo(f"Error Output / stderr : {e.stderr}")
+            click.echo(f"Skipping {code}")
+            failed.append(code)
+            continue
+
+        except FileNotFoundError:
+            click.echo("prefetch not found on PATH. Is the SRA Toolkit activated in your conda env?", err=True)
+            sys.exit(1)
+
+
+        # prefetch will usually drop <accession>.sra inside a subfolder of -O
+        sra_path = raw_dir / code / f"{code}.sra"
+        if not sra_path.exists():
+            sra_path = raw_dir / f"{code}.sra"
+
+
+        try:
+            subprocess.run(['fasterq-dump', str(sra_path), '-O', str(raw_dir)],
+                check=True,
+                capture_output=True,
+                text=True)
+
+        except subprocess.CalledProcessError as e:
+            click.echo(f"fasterq-dump failed for {code}", err=True)
+            click.echo(f"Exit Code: {e.returncode}", err=True)
+            click.echo(f"stderr: {e.stderr}", err=True)
+            click.echo(f"Skipping download for {sra_path}")
+            failed.append(code)
+            continue
+
+        r1 = raw_dir / f"{code}_1.fastq"
+        r2 = raw_dir / f"{code}_2.fastq"
+
+        if not r1.exists() or not r2.exists():
+            click.echo(f"Expected paired output not found: {r1} / {r2}", err=True)
+            click.echo("Check whether this is single-end data, or fasterq-dump used a different naming pattern.", err=True)
+            click.echo("Skipping...")
+            failed.append(code) 
+            continue
+         
+        try:
+            register(sample_name, r1, r2, force=force)
+        except ValueError:
+            click.echo(f"{code} already registered, use --force to overwrite")
+            failed.append(code)
+            continue
+        click.echo(f"Registered '{sample_name}' -> {r1}, {r2}")        
+    
+    if len(failed) > 0:
+        message = ', '.join(failed)
+    else:
+        message = "None"
+    
+    click.echo(f"{len(accession)-len(failed)}/{len(accession)} processed. Failed: {message}")
+        
+        
+
 
 @cli.command()
 @click.argument('accession')
