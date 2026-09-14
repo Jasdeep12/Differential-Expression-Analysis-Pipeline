@@ -10,6 +10,49 @@ This project takes paired-end RNA-seq reads from *Escherichia coli* K-12 MG1655 
 
 This workflow is designed such that it's reproducible and scalable to multiple samples.
 
+## Commands
+
+Samples are registered in `config/samples.tsv` using `add_sample.py`, a Click-based CLI with three subcommands.
+
+### fetch
+
+Downloads a single accession via `prefetch` + `fasterq-dump` and registers it as a sample.
+
+```bash
+python add_sample.py fetch SRR13970441
+python add_sample.py fetch SRR13970441 --name ecoli_ctrl_1
+python add_sample.py fetch SRR13970441 --force
+```
+
+- `--name` — sample name to use in `samples.tsv` (defaults to the accession)
+- `--force` — overwrite an existing sample with the same name
+
+### fetchall
+
+Downloads two or more accessions in one call. Failures (a failed download, missing paired output, or a duplicate sample name) are skipped rather than stopping the batch, and a summary is printed at the end.
+
+```bash
+python add_sample.py fetchall SRR000001 SRR000002 SRR000003
+python add_sample.py fetchall SRR000001 SRR000002 --name ctrl_1 --name treat_1
+```
+
+- `--name` — one name per accession, given in the same order (defaults to each accession)
+- `--force` — overwrite existing samples with matching names
+
+For a single accession, use `fetch` instead.
+
+### local
+
+Registers FASTQ files that are already downloaded, either as individual files or a directory. R1/R2 mates are paired automatically by filename (`_1`/`_2` or `_R1`/`_R2`).
+
+```bash
+python add_sample.py local data/raw/mysample_R1.fastq.gz data/raw/mysample_R2.fastq.gz
+python add_sample.py local data/raw/
+```
+
+- `--force` — overwrite existing samples with matching names
+
+
 ## Workflow
 
 Input : Fastq
