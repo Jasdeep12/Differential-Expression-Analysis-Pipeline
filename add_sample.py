@@ -264,14 +264,15 @@ def register(sample_name, r1, r2, force):
 
 	df.to_csv(SAMPLES_TSV, sep='\t', index=False)
 
+
 @cli.command()
-@click.option('--control',type=int,help='Number of control samples (Assuming those are the first N entries)')
-@click.option('--treatment', multiple=True,type=int,help='Number of treatment samples, can have multiples samples (Assuming they are in correct order), Ex. Entries 4-6 are treatment 1, and Entries 7-9 are treament 2, So "--treatment 3 3"')
-@click.option('--names',multiple=True,type=,help='Names of treatment(s), Ex. "--names treatment1 treatment2"')
-def condition(control,treatment,names)
+@click.option('--control',type=int, default=0,help='Number of control samples (Assuming those are the first N entries)')
+@click.option('--treatment', multiple=True, type=int, help='Number of treatment samples, can have multiples samples (Assuming they are in correct order), Ex. Entries 4-6 are treatment 1, and Entries 7-9 are treament 2, So "--treatment 3 --treatment 3"')
+@click.option('--names', multiple=True, type=str, help='Names of treatment(s), Ex. "--names treatment1 --names treatment2"')
+def condition(control,treatment,names):
 	"""Add conditions to the samples.tsv for each respective entry."""
 
-	df = ps.read_csv(SAMPLES_TSV, sep='\t')
+	df = pd.read_csv(SAMPLES_TSV, sep='\t')
 	if df.empty:
 		raise click.UsageError(f"{SAMPLES_TSV} is empty, please add samples.")
 
@@ -282,10 +283,10 @@ def condition(control,treatment,names)
 		raise click.BadParameter(f"Number of treatments ({len(treatment)}) does not match number of names given ({len(names)})")
 
 	columns = []
-	for i in range(control):
+	for count in range(control):
 		columns.append('control')
-	for i,name in treatment, names:
-		for j in range(i):
+	for count, name in zip(treatment, names):
+		for j in range(count):
 			columns.append(f'{name}')
 
 	df['Condition'] = columns
@@ -297,7 +298,6 @@ def condition(control,treatment,names)
 
 if __name__ == '__main__':
 	cli()
-
 
 
 
