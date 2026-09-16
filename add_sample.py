@@ -293,7 +293,14 @@ def condition(control,treatment,names):
 
 	df.to_csv(SAMPLES_TSV, sep='\t',index=False)
 
-
+@cli.command()
+@click.option('--samples',is_flag=True,default=False,help=f'Clears {SAMPLES_TSV}')
+@click.option('--raw-data',is_flag=True,default=False,help=f'Clears data/raw')
+@click.option('--results',is_flag=True,default=False,help=f'Clears results/')
+@click.option('--logs',is_flag=True,default=False,help=f'Clears Logs/')
+def clear(samples,raw_data,results,logs):
+	"""Easy way to clean the pipeline for reuse, or debugging"""
+	
 
 
 if __name__ == '__main__':
