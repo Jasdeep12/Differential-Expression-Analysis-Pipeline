@@ -113,13 +113,16 @@ The pipeline generated:
 ```text
 RNASeqPipelineProject/
 |- Snakefile
+|- add_sample.py
 |- README.md
 |- config/
+|	- config.yaml
 |	- samples.tsv
 |- data/
 |	- raw/
 |- envs/
 |	- RNASeqPipelineProject.yml
+|	- deseq2.yml
 |- reference/
 |	- genome.fna
 |	- genomic.gff
@@ -130,4 +133,6 @@ RNASeqPipelineProject/
 |	- fastp/
 |	- multiqc/
 |-scripts/
+|	- DE.R
+|	- make_matrix.py
 

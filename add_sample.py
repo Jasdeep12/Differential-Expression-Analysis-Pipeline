@@ -289,9 +289,13 @@ def condition(control,treatment,names):
 		for j in range(count):
 			columns.append(f'{name}')
 
-	df['Condition'] = columns
+	df['condition'] = columns
+	click.echo(f'Condition assignment for {SAMPLES_TSV} is as follows:')
+	click.echo(df[['sample','condition']].tostring(index=False))
 
 	df.to_csv(SAMPLES_TSV, sep='\t',index=False)
+
+
 
 @cli.command()
 @click.option('--samples',is_flag=True,default=False,help=f'Clears {SAMPLES_TSV}')

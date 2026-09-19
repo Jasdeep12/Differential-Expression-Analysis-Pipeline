@@ -170,3 +170,27 @@ rule multiqc:
 			--outdir results/multiqc \
 			--force
 		"""
+
+rule matrix:
+	input:
+	#Check featurecount casing
+		counts=expand("results/counts/{sample}.featurecounts.txt", sample=SAMPLES)
+	output:
+		matrix="results/matrix/count_matrix.tsv"
+	params:
+		samples=SAMPLES
+	conda:
+		"envs/RNASeqPipelineProject.yml"
+	script:
+		"scripts/make_matrix.py"
+
+rule deseq:
+	input:
+		matrix="results/matrix/count_matrix.tsv",
+		samples="samples.tsv"
+	output:
+		deseq="results/deseq/deseq_results.tsv"
+	conda:
+		"envs/deseq2.yml"
+	script:
+		"scripts/DE.R"
