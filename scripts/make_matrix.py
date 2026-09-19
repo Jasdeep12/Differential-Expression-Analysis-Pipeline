@@ -4,6 +4,7 @@ import sys
 
 
 def make_matrix(inputFile,sampleNames,outputFile):
+	"""Take a list of feature_count files and collate them into a single count matrix sorted by sample"""
 	merged = None
 	for filepath, name in zip(inputFiles, sampleNames):
 
@@ -25,6 +26,4 @@ if __name__ == '__main__':
 		inputFile=snakemake.input.counts,
 		sampleNames=snakemake.params.samples,
 		outputFile=snakemake.output[0]
-
-
 		)
