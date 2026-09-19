@@ -3,7 +3,7 @@ import sys
 
 
 
-def make_matrix(inputFile,sampleNames,outputFile):
+def make_matrix(inputFiles,sampleNames,outputFile):
 	"""Take a list of feature_count files and collate them into a single count matrix sorted by sample"""
 	merged = None
 	for filepath, name in zip(inputFiles, sampleNames):
@@ -14,7 +14,7 @@ def make_matrix(inputFile,sampleNames,outputFile):
 
 		df = df[['Geneid',countCol]].rename(columns = {countCol: name})
 
-		if merged == None:
+		if merged is None:
 			merged = df
 		else:
 			merged = merged.merge(df, on='Geneid',how='outer')
