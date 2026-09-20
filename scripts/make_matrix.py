@@ -23,7 +23,7 @@ def make_matrix(inputFiles,sampleNames,outputFile):
 
 if __name__ == '__main__':
 	make_matrix(
-		inputFile=snakemake.input.counts,
+		inputFiles=snakemake.input.counts,
 		sampleNames=snakemake.params.samples,
 		outputFile=snakemake.output[0]
 		)

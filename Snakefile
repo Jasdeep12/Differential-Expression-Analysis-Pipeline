@@ -37,7 +37,8 @@ rule all:
 		expand("results/counts/{sample}_counts.txt.summary",
 		sample=SAMPLES
 	),
-		"results/multiqc/multiqc_report.html"	
+		"results/multiqc/multiqc_report.html",
+		"results/deseq/deseq_results.tsv"
 									
 rule fastp:
 	input:
@@ -174,7 +175,7 @@ rule multiqc:
 rule matrix:
 	input:
 	#Check featurecount casing
-		counts=expand("results/counts/{sample}.featurecounts.txt", sample=SAMPLES)
+		counts=expand("results/counts/{sample}_counts.txt", sample=SAMPLES)
 	output:
 		matrix="results/matrix/count_matrix.tsv"
 	params:
@@ -187,7 +188,7 @@ rule matrix:
 rule deseq:
 	input:
 		matrix="results/matrix/count_matrix.tsv",
-		samples="samples.tsv"
+		samples="config/samples.tsv"
 	output:
 		deseq="results/deseq/deseq_results.tsv"
 	conda:
