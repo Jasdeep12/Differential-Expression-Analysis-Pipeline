@@ -1,5 +1,6 @@
 .snakemake/
 results/
+reference/
 logs/
 data/
 *.bam

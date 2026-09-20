@@ -1,8 +1,7 @@
 
 reference:
-  genome: reference/genome.fna
-  annotation: reference/genomic.gff
-  hisat2_index: reference/hisat2_index/ecoli
+  annotation: reference/Homo_sapiens.GRCh38.116.chr.gtf
+  hisat2_index: reference/hisat2_index/genome_tran
  
 threads:
   align: 2

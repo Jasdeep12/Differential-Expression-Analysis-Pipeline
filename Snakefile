@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 
 configfile: "config/config.yaml"
@@ -6,19 +7,45 @@ configfile: "config/config.yaml"
 samples = pd.read_csv("config/samples.tsv", sep="\t")
 SAMPLES = samples["sample"].tolist()
 
+
+def is_paired(sample):
+	r2 = samples.loc[samples["sample"] == sample, "R2"].iloc[0]
+	return pd.notna(r2) and str(r2).strip() != ""
+
+def trimmed_reads(sample):
+	if is_paired(sample):
+		return [f"results/trimmed/{sample}_1.fastq.gz", f"results/trimmed/{sample}_2.fastq.gz"]
+	else:
+		return [f"results/trimmed/{sample}.fastq.gz"]
+		
+def fastp_input(wildcards):
+	row = samples.loc[samples["sample"] == wildcards.sample].iloc[0]
+	if is_paired(wildcards.sample):
+		return {"r1": row["R1"], "r2": row["R2"]}
+	return {"r1": row["R1"]}
+	
+def fastp_output(wildcards):
+	if is_paired(wildcards.sample):
+		return {
+			"trim1": f"results/trimmed/{wildcards.sample}_1.fastq.gz",
+			"trim2": f"results/trimmed/{wildcards.sample}_2.fastq.gz",
+			"json": f"results/fastp/{wildcards.sample}.json",
+			"html": f"results/fastp/{wildcards.sample}.html",
+		}
+	return {
+		"trim1": f"results/trimmed/{wildcards.sample}.fastq.gz",
+		"json": f"results/fastp/{wildcards.sample}.json",
+		"html": f"results/fastp/{wildcards.sample}.html",
+	}
+
+
 HISAT2_INDEX = config["reference"]["hisat2_index"]
 ALIGN_THREADS = config["threads"]["align"]
 SAMTOOLS_THREADS = config["threads"]["samtools"]
 
-
 rule all:
 	input:
-		expand("results/trimmed/{sample}_1.fastq.gz",
-		sample=SAMPLES
-	),	
-		expand("results/trimmed/{sample}_2.fastq.gz",
-		sample=SAMPLES
-	),
+		[f for sample in SAMPLES for f in trimmed_reads(sample)],
 		expand("results/fastp/{sample}.json",
 		sample=SAMPLES
 	),	
@@ -40,64 +67,83 @@ rule all:
 		"results/multiqc/multiqc_report.html",
 		"results/deseq/deseq_results.tsv"
 									
-rule fastp:
-	input:
-		r1=lambda wildcards: samples.loc[samples["sample"] == wildcards.sample, "R1"].iloc[0],
-		r2=lambda wildcards: samples.loc[samples["sample"] == wildcards.sample, "R2"].iloc[0]
-	output:
-		json="results/fastp/{sample}.json",
-		html="results/fastp/{sample}.html",
-		trim1="results/trimmed/{sample}_1.fastq.gz",
-		trim2="results/trimmed/{sample}_2.fastq.gz"
+									
+PAIRED_SAMPLES = [s for s in SAMPLES if is_paired(s)]
+SINGLE_SAMPLES = [s for s in SAMPLES if not is_paired(s)]
+paired_regex = "|".join(re.escape(s) for s in PAIRED_SAMPLES) or "(?!)"
+single_regex = "|".join(re.escape(s) for s in SINGLE_SAMPLES) or "(?!)"
 
+rule fastp_pe:
+	input:
+		r1=lambda w: samples.loc[samples["sample"] == w.sample, "R1"].iloc[0],
+		r2=lambda w: samples.loc[samples["sample"] == w.sample, "R2"].iloc[0]
+	output:
+		trim1="results/trimmed/{sample}_1.fastq.gz",
+		trim2="results/trimmed/{sample}_2.fastq.gz",
+		json="results/fastp/{sample}.json",
+		html="results/fastp/{sample}.html"
+	wildcard_constraints:
+		sample=paired_regex
 	conda:
 		"envs/RNASeqPipelineProject.yml"
-	
 	threads: ALIGN_THREADS
-	
 	shell:
-		"""
-		
-		fastp \
-		-i {input.r1} \
-		-I {input.r2} \
-		-o {output.trim1} \
-		-O {output.trim2} \
-		-h {output.html} \
-		-j {output.json} \
-		--thread {threads}
-		"""
-	
+		"fastp -i {input.r1} -I {input.r2} -o {output.trim1} -O {output.trim2} "
+		"-h {output.html} -j {output.json} --thread {threads}"
+
+rule fastp_se:
+	input:
+		r1=lambda w: samples.loc[samples["sample"] == w.sample, "R1"].iloc[0]
+	output:
+		trim1="results/trimmed/{sample}.fastq.gz",
+		json="results/fastp/{sample}.json",
+		html="results/fastp/{sample}.html"
+	wildcard_constraints:
+		sample=single_regex
+	conda:
+		"envs/RNASeqPipelineProject.yml"
+	threads: ALIGN_THREADS
+	shell:
+		"fastp -i {input.r1} -o {output.trim1} "
+		"-h {output.html} -j {output.json} --thread {threads}"
+
+def align_input(wildcards):
+    reads = trimmed_reads(wildcards.sample) 
+    inputs = {
+        "index": f"{HISAT2_INDEX}.1.ht2",
+        "r1": reads[0]
+    }
+    
+    # Add the second read pair if the sample is paired-end
+    if is_paired(wildcards.sample):
+        inputs["r2"] = reads[1]
+        
+    return inputs
+
 rule align:
 	input:
-		r1="results/trimmed/{sample}_1.fastq.gz",
-		r2="results/trimmed/{sample}_2.fastq.gz",
-		index=HISAT2_INDEX + ".1.ht2"
-
+		unpack(align_input)
 	output:
 		bam="results/bam/{sample}.sorted.bam"
-
 	conda:
 		"envs/RNASeqPipelineProject.yml"	
-
 	log:
 		"logs/{sample}.hisat2.log"
 	
 	threads: ALIGN_THREADS
 
-	shell:
-		"""
-		hisat2 \
-		-p {threads} \
-		-x {HISAT2_INDEX} \
-		-1 {input.r1} \
-		-2 {input.r2} \
-		2> {log} \
-		| samtools sort \
-			-@ {SAMTOOLS_THREADS} \
-			-o {output.bam} \
-			-
-		"""
+	run:
+		if is_paired(wildcards.sample):
+			shell(
+				"hisat2 -p {threads} -x {HISAT2_INDEX} -1 {input.r1} -2 {input.r2} "
+				"2> {log} | samtools sort -@ {SAMTOOLS_THREADS} -o {output.bam} -"
+			)
+		else:
+			shell(
+				"hisat2 -p {threads} -x {HISAT2_INDEX} -U {input.r1} "
+				"2> {log} | samtools sort -@ {SAMTOOLS_THREADS} -o {output.bam} -"
+			)
+
 
 rule index_bam:
 	input:
@@ -137,17 +183,18 @@ rule quantify:
 	output:
 		counts="results/counts/{sample}_counts.txt",
 		summary="results/counts/{sample}_counts.txt.summary"
-
+	
 	conda:
 		"envs/RNASeqPipelineProject.yml"
-	
+	params:
+		paired_flag = lambda wildcards: "-p" if is_paired(wildcards.sample) else ""
 	shell:
 		"""
-		featureCounts -p \
+		featureCounts {params.paired_flag} \
 			-a {input.annotation} \
 			-o {output.counts} \
 			-t gene \
-			-g locus_tag \
+			-g gene_id \
 			{input.bam}
 		"""
 
@@ -174,7 +221,6 @@ rule multiqc:
 
 rule matrix:
 	input:
-	#Check featurecount casing
 		counts=expand("results/counts/{sample}_counts.txt", sample=SAMPLES)
 	output:
 		matrix="results/matrix/count_matrix.tsv"
