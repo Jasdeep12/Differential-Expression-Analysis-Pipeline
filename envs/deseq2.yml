@@ -27,6 +27,7 @@ dependencies:
   - c-ares=1.34.8=hebe6cf0_2
   - ca-certificates=2026.7.22=hbd8a1cb_0
   - cairo=1.18.4=h3c89d7e_3
+  - certifi=2026.7.22=pyhd8ed1ab_0
   - curl=8.22.0=ha042cf0_0
   - font-ttf-dejavu-sans-mono=2.37=hab24e00_0
   - font-ttf-inconsolata=3.000=h77eed37_0
@@ -71,11 +72,14 @@ dependencies:
   - libjpeg-turbo=3.2.0=hb03c661_1
   - liblapack=3.11.0=11_h47877c9_openblas
   - liblzma=5.8.3=hb03c661_1
+  - libmpdec=4.0.0=hb03c661_2
   - libnghttp2=1.68.1=h74cf4be_1
   - libopenblas=0.3.34=pthreads_hf13c14d_2
   - libpng=1.6.58=h922cc85_1
   - libpsl=0.23.1=hd9e3e90_1
+  - libpython=3.14.7=hdc7f604_106_cp314
   - libsanitizer=16.2.0=h3048135_5
+  - libsqlite=3.53.4=h13e7031_1
   - libssh2=1.11.1=h6154650_1
   - libstdcxx=16.2.0=h934c35e_5
   - libstdcxx-devel_linux-64=16.2.0=h86e191b_105
@@ -89,8 +93,11 @@ dependencies:
   - openssl=3.6.4=h781a0a9_0
   - pango=1.58.2=h7bb47b9_1
   - pcre2=10.47=h8b3dc9c_1
+  - pip=26.2.1=pyh145f28c_0
   - pixman=0.46.4=h54a6638_3
   - pthread-stubs=0.4=h7cc23a3_1004
+  - python=3.14.7=hcd007b5_106_cp314
+  - python_abi=3.14=9_cp314
   - r-abind=1.4_8=r45hc72bb7e_1
   - r-base=4.5.3=h502d0c9_3
   - r-bh=1.90.0_1=r45hc72bb7e_0
