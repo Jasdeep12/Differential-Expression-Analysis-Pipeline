@@ -65,7 +65,7 @@ rule all:
 		sample=SAMPLES
 	),
 		"results/multiqc/multiqc_report.html",
-		"results/deseq/deseq_results.tsv"
+		"results/deseq/deseq_results.csv"
 									
 									
 PAIRED_SAMPLES = [s for s in SAMPLES if is_paired(s)]
@@ -236,7 +236,7 @@ rule deseq:
 		matrix="results/matrix/count_matrix.tsv",
 		samples="config/samples.tsv"
 	output:
-		deseq="results/deseq/deseq_results.tsv"
+		deseq="results/deseq/deseq_results.csv"
 	conda:
 		"envs/deseq2.yml"
 	script:
