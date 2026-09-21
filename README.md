@@ -113,7 +113,7 @@ https://www.ncbi.nlm.nih.gov/bioproject/PRJEB75208
 Runs 9-14
 
 Reads:
-Single-end FASTQ
+Single-end FASTQ,
 Paired-end FASTQ
 
 ## Environment
