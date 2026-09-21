@@ -1,5 +1,0 @@
-sample	R1	R2	condition
-SRR39186598	data/raw/SRR39186598.fastq		control
-SRR39186597	data/raw/SRR39186597.fastq		control
-SRR39186596	data/raw/SRR39186596.fastq		cf
-SRR39186595	data/raw/SRR39186595.fastq		cf
