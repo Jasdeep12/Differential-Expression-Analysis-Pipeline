@@ -1,7 +1,7 @@
 
 reference:
   annotation: reference/Homo_sapiens.GRCh38.116.chr.gtf
-  hisat2_index: reference/hisat2_index/genome_tran3
+  hisat2_index: reference/hisat2_index/genome_tran
 
 quantification:
   strandedness: 2
