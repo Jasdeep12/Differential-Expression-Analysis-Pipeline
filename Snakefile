@@ -189,10 +189,12 @@ rule quantify:
 	conda:
 		"envs/RNASeqPipelineProject.yml"
 	params:
+		strandedness=config["quantification"]["strandedness"],
 		paired_flag = lambda wildcards: "-p" if is_paired(wildcards.sample) else ""
 	shell:
 		"""
-		featureCounts {params.paired_flag} \
+		featureCounts -s {params.strandedness} \
+			{params.paired_flag} \
 			-a {input.annotation} \
 			-o {output.counts} \
 			-t gene \
