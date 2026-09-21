@@ -65,7 +65,9 @@ rule all:
 		sample=SAMPLES
 	),
 		"results/multiqc/multiqc_report.html",
-		"results/deseq/deseq_results.csv"
+		"results/deseq/deseq_results.csv",
+		"results/volcano/volcano.pdf",
+		"results/volcano/volcano.png"
 									
 									
 PAIRED_SAMPLES = [s for s in SAMPLES if is_paired(s)]
@@ -241,3 +243,15 @@ rule deseq:
 		"envs/deseq2.yml"
 	script:
 		"scripts/DE.R"
+		
+rule volcano:
+	input:
+		deseq="results/deseq/deseq_results.csv"
+	output:
+		pdf="results/volcano/volcano.pdf",
+		png="results/volcano/volcano.png"
+	conda:
+		"envs/deseq2.yml"
+	script:
+		"scripts/volcano.R"
+		
