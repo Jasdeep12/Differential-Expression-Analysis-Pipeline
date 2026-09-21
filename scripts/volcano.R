@@ -15,6 +15,7 @@ de_df$symbol <- mapIds(
 	column = "SYMBOL",
 	multiVals = "first"
 	)
+write.csv(de_df, snakemake@output[["csv"]])
 
 sig <- de_df[!is.na(de_df$symbol) &
              de_df$padj < 0.05 &

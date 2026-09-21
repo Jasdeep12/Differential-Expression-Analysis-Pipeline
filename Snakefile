@@ -249,7 +249,8 @@ rule volcano:
 		deseq="results/deseq/deseq_results.csv"
 	output:
 		pdf="results/volcano/volcano.pdf",
-		png="results/volcano/volcano.png"
+		png="results/volcano/volcano.png",
+		csv="results/volcano/deseqUpdated.csv"
 	conda:
 		"envs/deseq2.yml"
 	script:
