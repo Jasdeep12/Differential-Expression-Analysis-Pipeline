@@ -11,3 +11,4 @@ __pycache__/
 .Rhistory
 .RData
 config/samples.tsv
+.vscode/settings.json
