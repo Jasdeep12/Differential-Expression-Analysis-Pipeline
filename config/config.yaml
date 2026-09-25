@@ -5,6 +5,22 @@ reference:
 
 quantification:
   strandedness: 2
+
+species:
+  - 'Homo sapiens'
+
+geneSet:
+  - 'H'
+
+gseaStat:
+  - 'stat'
+
+plot:
+  # title of volcano plot
+  volcano: 'Human bronchial epithielial cells: Normal VS Cystic Fibrosis'
+  # title of barplot for GSEA
+  barplot: 'Top Enriched Hallmark Pathways'
+  
  
 threads:
   align: 2

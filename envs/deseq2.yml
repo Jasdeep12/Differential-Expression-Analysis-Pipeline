@@ -181,6 +181,6 @@ dependencies:
   - yq=4.1.1=pyhcf101f3_0
   - zstd=1.5.7=hb78ec9c_7
   - r-msigdbr
-  - r-clusterprofiler
-  - r-enrichplot
+  - bioconductor-clusterprofiler
+  - r-tidyverse
 prefix: /home/jazz/ENTER/envs/deseq2

@@ -67,7 +67,9 @@ rule all:
 		"results/multiqc/multiqc_report.html",
 		"results/deseq/deseq_results.csv",
 		"results/volcano/volcano.pdf",
-		"results/volcano/volcano.png"
+		"results/volcano/volcano.png",
+		"results/gsea/gsea.csv",
+		"results/gsea/barplot.png"
 									
 									
 PAIRED_SAMPLES = [s for s in SAMPLES if is_paired(s)]
@@ -257,4 +259,16 @@ rule volcano:
 		"envs/deseq2.yml"
 	script:
 		"scripts/volcano.R"
+
+rule gsea:
+	input:
+		deseq="results/deseq/deseq_results.csv"
+	output:
+		gsea="results/gsea/gsea.csv",
+		barplot="results/gsea/barplot.png"
+	conda:
+		"envs/deseq2.yml"
+	script:
+		"scripts/gsea.R"
+
 		

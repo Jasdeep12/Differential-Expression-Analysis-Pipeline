@@ -21,7 +21,8 @@ sig <- de_df[!is.na(de_df$symbol) &
              de_df$padj < 0.05 &
              abs(de_df$log2FoldChange) > 1.0, ]
 top_genes <- sig$symbol[order(sig$padj)][1:15]	
-	
+
+plot_title <- snakemake@config[["plot"]][["volcano"]]
 
 p <- EnhancedVolcano(de_df,
 	lab = de_df$symbol,
@@ -33,7 +34,7 @@ p <- EnhancedVolcano(de_df,
 	pointSize = 2.0,
 	labSize = 4.0,
 	drawConnectors = TRUE,
-	title = 'Human bronchial epithielial cells: Normal VS Cystic Fibrosis',
+	title = plot_title,
 	subtitle = 'Differential expression analysis',
 	legendPosition = 'right')
 
