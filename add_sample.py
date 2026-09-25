@@ -19,7 +19,7 @@ def cli():
 
 @cli.command()
 @click.argument('accession', nargs=-1)
-@click.option('--name', type=str, default=None, multiple=True, help='Sample names to use in the samples.tsv, enter them in the same order as the accession numbers (defaults to the accession')
+@click.option('--name', type=str, default=None, multiple=True, help='Sample names to use in the samples.tsv, enter them in the same order as the accession numbers (defaults to the accession)')
 @click.option('--force', is_flag=True, help='Overwrite any existing samples with the same name')
 def fetchall(accession, name, force):
 	"""Downloads multiple ACCESSIONS via prefetch and fasterq-dump and registers it as samples"""
@@ -303,6 +303,8 @@ def condition(control,treatment,names):
 @click.option('--logs',is_flag=True,default=False,help=f'Clears Logs/')
 def clear(samples,raw_data,results,logs):
 	"""Easy way to clean the pipeline for reuse, or debugging"""
+
+	#TO DO
 	pass
 	
 
