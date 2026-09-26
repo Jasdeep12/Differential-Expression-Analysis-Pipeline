@@ -1,4 +1,4 @@
-# Differential Expression Analysis and Gene set Enrichment Analysis Pipeline
+# Differential Expression Analysis and Gene Set Enrichment Analysis Pipeline
 
 A Differential Expression and Gene set Enrichment analysis workflow for paired-end and single-end sequence data, built using Python, R, Snakemake, and Conda, with a Click-based CLI.
 
